@@ -1,6 +1,6 @@
 ---
 title: "Communicating OpenTelemetry Trace IDs in EDNS"
-abbrev: "TODO - Abbreviation"
+abbrev: "EDNS OTTRACEIDS"
 category: info
 
 docname: draft-edns-otel-trace-ids-latest
