@@ -19,22 +19,21 @@
 # Change the file extension to match the format (.xml for XML, etc...)
 #
 ###
-title: "TODO - Your title"
+title: "Communicating OpenTelemetry Trace IDs in EDNS"
 abbrev: "TODO - Abbreviation"
 category: info
 
-docname: draft-todo-yourname-protocol-latest
-submissiontype: IETF  # also: "independent", "editorial", "IAB", or "IRTF"
+docname: draft-edns-otel-trace-ids-latest
+submissiontype: independent  # also: "independent", "editorial", "IAB", or "IRTF"
 number:
 date:
 consensus: true
 v: 3
-area: AREA
-workgroup: WG Working Group
+area: ops
+workgroup: dnsop
 keyword:
- - next generation
- - unicorn
- - sparkling distributed ledger
+ - EDNS
+ - OpenTelemetry
 venue:
   group: WG
   type: Working Group
@@ -45,9 +44,13 @@ venue:
 
 author:
  -
-    fullname: Your Name Here
-    organization: Your Organization Here
-    email: your.email@example.com
+    fullname: Otto Moerbeek
+    organization: PowerDNS.com B.V.
+    email: otto.moerbeek@powerdns.com
+ -
+    fullname: Peter van Dijk
+    organization: PowerDNS.com B.V.
+    email: peter.van.dijk@powerdns.com
 
 normative:
 
@@ -71,6 +74,22 @@ TODO Introduction
 
 {::boilerplate bcp14-tagged}
 
+# Wire Format
+
+```
+                   +0 (MSB)                            +1 (LSB)
+      +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+   0: |                       OPTION-CODE (TBD1)                      |
+      +---+---+---+---+---+---+---+---|---+---+---+---+---+---+---+---+
+   2: |                       OPTION-LENGTH (16 or 24)                |
+      +---+---+---+---+---+---+---+---|---+---+---+---+---+---+---+---+
+   4: |                           TRACE ID                            /
+      |                                                               /
+      +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+  20: |                       SPAN ID (optional)                      /
+      |                                                               /
+      +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+```
 
 # Security Considerations
 
