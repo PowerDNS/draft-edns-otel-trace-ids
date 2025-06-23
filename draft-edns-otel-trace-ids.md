@@ -56,7 +56,7 @@ TODO Introduction
 
 # Wire Format
 
-```
+~~~ ascii-art
                    +0 (MSB)                            +1 (LSB)
       +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
    0: |                       OPTION-CODE (TBD1)                      |
@@ -69,7 +69,7 @@ TODO Introduction
   20: |                       SPAN ID (optional)                      /
       |                                                               /
       +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
-```
+~~~
 
 # Security Considerations
 
