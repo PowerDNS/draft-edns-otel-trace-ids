@@ -27,7 +27,7 @@ docname: draft-edns-otel-trace-ids-latest
 submissiontype: independent  # also: "independent", "editorial", "IAB", or "IRTF"
 number:
 date:
-consensus: true
+consensus: false
 v: 3
 area: ops
 workgroup: dnsop
