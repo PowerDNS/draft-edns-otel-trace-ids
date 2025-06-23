@@ -1,0 +1,3 @@
+# Automatically generated CODEOWNERS
+# Regenerate with `make update-codeowners`
+draft-edns-otel-trace-ids.md otto.moerbeek@powerdns.com peter.van.dijk@powerdns.com
