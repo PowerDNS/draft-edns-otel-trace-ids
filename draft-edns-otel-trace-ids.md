@@ -9,18 +9,18 @@ number:
 date:
 consensus: false
 v: 3
-area: ops
-workgroup: dnsop
+# area: ops
+# workgroup: dnsop
 keyword:
  - EDNS
  - OpenTelemetry
 venue:
-  group: WG
-  type: Working Group
-  mail: WG@example.com
-  arch: https://example.com/WG
-  github: USER/REPO
-  latest: https://example.com/LATEST
+#  group: WG
+#  type: Working Group
+#  mail: WG@example.com
+#  arch: https://example.com/WG
+  github: "PowerDNS/draft-edns-otel-trace-ids"
+  latest: "https://PowerDNS.github.io/draft-edns-otel-trace-ids/draft-edns-otel-trace-ids.html"
 
 author:
  -
