@@ -1,0 +1,87 @@
+{
+  "magic": "E!vIA5L86J2I",
+  "timestamp": "2025-06-26T00:30:48.993805+00:00",
+  "repo": "PowerDNS/draft-edns-otel-trace-ids",
+  "labels": [
+    {
+      "name": "bug",
+      "description": "Something isn't working",
+      "color": "d73a4a"
+    },
+    {
+      "name": "documentation",
+      "description": "Improvements or additions to documentation",
+      "color": "0075ca"
+    },
+    {
+      "name": "duplicate",
+      "description": "This issue or pull request already exists",
+      "color": "cfd3d7"
+    },
+    {
+      "name": "enhancement",
+      "description": "New feature or request",
+      "color": "a2eeef"
+    },
+    {
+      "name": "good first issue",
+      "description": "Good for newcomers",
+      "color": "7057ff"
+    },
+    {
+      "name": "help wanted",
+      "description": "Extra attention is needed",
+      "color": "008672"
+    },
+    {
+      "name": "invalid",
+      "description": "This doesn't seem right",
+      "color": "e4e669"
+    },
+    {
+      "name": "question",
+      "description": "Further information is requested",
+      "color": "d876e3"
+    },
+    {
+      "name": "wontfix",
+      "description": "This will not be worked on",
+      "color": "ffffff"
+    }
+  ],
+  "issues": [
+    {
+      "number": 1,
+      "id": "I_kwDOPAkemM68_fFg",
+      "title": "version number?",
+      "url": "https://github.com/PowerDNS/draft-edns-otel-trace-ids/issues/1",
+      "state": "OPEN",
+      "author": "Habbie",
+      "authorAssociation": "MEMBER",
+      "assignees": [],
+      "labels": [],
+      "body": "Should we spend one octet (the first of the payload) on a version number, in case OTel ever decides on new sizes for trace/span IDs etc.?",
+      "createdAt": "2025-06-24T07:36:33Z",
+      "updatedAt": "2025-06-24T07:36:33Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 2,
+      "id": "I_kwDOPAkemM68_gVy",
+      "title": "use cases",
+      "url": "https://github.com/PowerDNS/draft-edns-otel-trace-ids/issues/2",
+      "state": "OPEN",
+      "author": "Habbie",
+      "authorAssociation": "MEMBER",
+      "assignees": [],
+      "labels": [],
+      "body": "Text copied from @omoerbeek  in https://github.com/PowerDNS/pdns/pull/15668#discussion_r2163184813\n\nThe offline discussion resulted in a summary of cases, which I will list below. This probably should be added to the draft\n\n- A service can act as a initiator, or receive DNS requests itself. A service can also send DNS requests to other services. \n- A service can either produce a telemetry stream itself or not. `sdig` is an example of a initiator that does not produce telemetry, rec is a both a receiver and producer of DNS messages and creates a telemetry stream. With this PR rec uses the incoming TraceID/SpanID, but does not send out any yet.\n-  If you're an initiator, you can create a TraceID and pass it on to the next in the chain.\n- If you as an initiator produce telemetry, you create a Span with an empty parent SpanID en a non-empty SpanID. You pass the SpanID and the TraceID to the next in the chain.\n- If you're an initiator that does not generate telemetry you pass an empty SpanID and a (non-empty) TraceID (this is the `sdig` case).\n- If you receive a TraceID and SpanID and you generate telemetry (you create Spans yourself), you use the incoming TraceID, and the Spans you create get as parent the incoming SpanID. If you do not create Spans yourself, you pass the received TraceID and SpanID to the next in the chain.\n",
+      "createdAt": "2025-06-24T07:38:00Z",
+      "updatedAt": "2025-06-24T07:44:57Z",
+      "closedAt": null,
+      "comments": []
+    }
+  ],
+  "pulls": []
+}
