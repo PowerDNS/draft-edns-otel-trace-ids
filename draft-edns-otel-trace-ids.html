@@ -1195,28 +1195,30 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
       <h2 id="name-wire-format">
 <a href="#section-3" class="section-number selfRef">3. </a><a href="#name-wire-format" class="section-name selfRef">Wire Format</a>
       </h2>
-<p id="section-3-1">NOTE: this diagram will be easier to read if it is two octets wide instead of four.<a href="#section-3-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-ascii-art art-text artwork" id="section-3-2">
+<div class="alignLeft art-ascii-art art-text artwork" id="section-3-1">
 <pre>
-    0                   1                   2                   3
-    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- 0: |         OPTION-CODE (TBD1)    | OPTION-LENGTH (17 or 25)      |
-    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- 4: |   VERSION (0) |   RESERVED    |    TRACE ID (16 octets)       /
-    |---------------+---------------+                               /
-    |                                                               /
-    |                               +-------------------------------/
-20: | ..TRACE ID                    | SPAN ID (optional, 8 octets)  /
-    |-------------------------------+                               /
-    |                                                               /
-    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     0                   1
+     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+    +---------------+---------------+
+ 0: |        OPTION-CODE (TBD1)     |
+    +---------------+---------------+
+ 2: |    OPTION-LENGTH (18 or 26)   |
+    +---------------+---------------+
+ 4: |   VERSION (0) |   RESERVED    |
+    +---------------+---------------+
+ 6: |      TRACE ID (16 octets)     /
+    /                               /
+    |---------------+---------------+
+22: | SPAN ID (optional, 8 octets)  /
+    /                               /
+    +---------------+---------------+
 
-</pre><a href="#section-3-2" class="pilcrow">¶</a>
+</pre><a href="#section-3-1" class="pilcrow">¶</a>
 </div>
-<p id="section-3-3">Version is 0 for this specification.
+<p id="section-3-2">Version (1 octet) has the value 0 for this specification.
+Reserved (1 octet) <span class="bcp14">MUST</span> also be set to 0.
 The Trace ID is 16 octets long and is mandatory (or not? if empty, receiver selects one, so that empty is just a "please trace" signal. Although then the sender could also just generate a trace ID).
-The optional Span ID is 8 octets long.<a href="#section-3-3" class="pilcrow">¶</a></p>
+The optional Span ID is 8 octets long.<a href="#section-3-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="security-considerations">
