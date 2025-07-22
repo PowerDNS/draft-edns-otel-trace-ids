@@ -1195,7 +1195,8 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
       <h2 id="name-wire-format">
 <a href="#section-3" class="section-number selfRef">3. </a><a href="#name-wire-format" class="section-name selfRef">Wire Format</a>
       </h2>
-<div class="alignLeft art-ascii-art art-text artwork" id="section-3-1">
+<p id="section-3-1">NOTE: spending an extra byte between VERSION and TRACE ID for chart alignment / future extensibility might make sense.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-ascii-art art-text artwork" id="section-3-2">
 <pre>
     0                   1                   2                   3
     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
@@ -1211,11 +1212,11 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
     |                                                               /
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
-</pre><a href="#section-3-1" class="pilcrow">¶</a>
+</pre><a href="#section-3-2" class="pilcrow">¶</a>
 </div>
-<p id="section-3-2">Version is 0 for this specification.
+<p id="section-3-3">Version is 0 for this specification.
 The Trace ID is 16 octets long and is mandatory (or not? if empty, receiver selects one, so that empty is just a "please trace" signal. Although then the sender could also just generate a trace ID).
-The optional Span ID is 8 octets long.<a href="#section-3-2" class="pilcrow">¶</a></p>
+The optional Span ID is 8 octets long.<a href="#section-3-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="security-considerations">
