@@ -56,7 +56,7 @@ TODO Introduction
 
 # Wire Format
 
-NOTE: spending an extra byte between VERSION and TRACE ID for chart alignment / future extensibility might make sense.
+NOTE: this diagram will be easier to read if it is two octets wide instead of four.
 
 ~~~ ascii-art
     0                   1                   2                   3
@@ -64,12 +64,12 @@ NOTE: spending an extra byte between VERSION and TRACE ID for chart alignment / 
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  0: |         OPTION-CODE (TBD1)    | OPTION-LENGTH (17 or 25)      |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- 4: |   VERSION (0) |         TRACE ID (16 octets)                  /
-    |---------------+                                               /
+ 4: |   VERSION (0) |   RESERVED    |    TRACE ID (16 octets)       /
+    |---------------+---------------+                               /
     |                                                               /
-    |               +-----------------------------------------------/
-20: | ..TRACE ID    |         SPAN ID (optional, 8 octets)          /
-    |---------------+                                               /
+    |                               +-------------------------------/
+20: | ..TRACE ID                    | SPAN ID (optional, 8 octets)  /
+    |-------------------------------+                               /
     |                                                               /
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
