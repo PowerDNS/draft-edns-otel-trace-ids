@@ -1195,7 +1195,7 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
       <h2 id="name-wire-format">
 <a href="#section-3" class="section-number selfRef">3. </a><a href="#name-wire-format" class="section-name selfRef">Wire Format</a>
       </h2>
-<p id="section-3-1">NOTE: spending an extra byte between VERSION and TRACE ID for chart alignment / future extensibility might make sense.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<p id="section-3-1">NOTE: this diagram will be easier to read if it is two octets wide instead of four.<a href="#section-3-1" class="pilcrow">¶</a></p>
 <div class="alignLeft art-ascii-art art-text artwork" id="section-3-2">
 <pre>
     0                   1                   2                   3
@@ -1203,12 +1203,12 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  0: |         OPTION-CODE (TBD1)    | OPTION-LENGTH (17 or 25)      |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- 4: |   VERSION (0) |         TRACE ID (16 octets)                  /
-    |---------------+                                               /
+ 4: |   VERSION (0) |   RESERVED    |    TRACE ID (16 octets)       /
+    |---------------+---------------+                               /
     |                                                               /
-    |               +-----------------------------------------------/
-20: | ..TRACE ID    |         SPAN ID (optional, 8 octets)          /
-    |---------------+                                               /
+    |                               +-------------------------------/
+20: | ..TRACE ID                    | SPAN ID (optional, 8 octets)  /
+    |-------------------------------+                               /
     |                                                               /
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
