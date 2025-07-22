@@ -56,6 +56,8 @@ TODO Introduction
 
 # Wire Format
 
+NOTE: spending an extra byte between VERSION and TRACE ID for chart alignment / future extensibility might make sense.
+
 ~~~ ascii-art
     0                   1                   2                   3
     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
