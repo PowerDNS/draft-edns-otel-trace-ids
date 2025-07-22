@@ -56,26 +56,27 @@ TODO Introduction
 
 # Wire Format
 
-NOTE: this diagram will be easier to read if it is two octets wide instead of four.
-
 ~~~ ascii-art
-    0                   1                   2                   3
-    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- 0: |         OPTION-CODE (TBD1)    | OPTION-LENGTH (17 or 25)      |
-    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- 4: |   VERSION (0) |   RESERVED    |    TRACE ID (16 octets)       /
-    |---------------+---------------+                               /
-    |                                                               /
-    |                               +-------------------------------/
-20: | ..TRACE ID                    | SPAN ID (optional, 8 octets)  /
-    |-------------------------------+                               /
-    |                                                               /
-    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     0                   1
+     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+    +---------------+---------------+
+ 0: |        OPTION-CODE (TBD1)     |
+    +---------------+---------------+
+ 2: |    OPTION-LENGTH (18 or 26)   |
+    +---------------+---------------+
+ 4: |   VERSION (0) |   RESERVED    |
+    +---------------+---------------+
+ 6: |      TRACE ID (16 octets)     /
+    /                               /
+    |---------------+---------------+
+22: | SPAN ID (optional, 8 octets)  /
+    /                               /
+    +---------------+---------------+
 
 ~~~
 
-Version is 0 for this specification.
+Version (1 octet) has the value 0 for this specification.
+Reserved (1 octet) MUST also be set to 0.
 The Trace ID is 16 octets long and is mandatory (or not? if empty, receiver selects one, so that empty is just a "please trace" signal. Although then the sender could also just generate a trace ID).
 The optional Span ID is 8 octets long.
 
