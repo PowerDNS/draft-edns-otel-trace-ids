@@ -63,13 +63,19 @@ TODO Introduction
       +---+---+---+---+---+---+---+---|---+---+---+---+---+---+---+---+
    2: |                       OPTION-LENGTH (16 or 24)                |
       +---+---+---+---+---+---+---+---|---+---+---+---+---+---+---+---+
-   4: |                           TRACE ID                            /
+   4: |     VERSION (1 octet)         |
+      +---+---+---+---+---+---+---+---|---+---+---+---+---+---+---+---+
+   5: |                           TRACE ID                            /
       |                                                               /
       +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
-  20: |                       SPAN ID (optional)                      /
+  21: |                       SPAN ID (optional)                      /
       |                                                               /
       +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
 ~~~
+
+Version is 0 for this specification.
+The Trace ID is 16 octets long and is mandatory (or not? if empty, receiver selects one, so that empty is just a "please trace" signal. Although then the sender could also just generate a trace ID).
+The optional Span ID is 8 octets long.
 
 # Security Considerations
 
