@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-07-22T00:32:45.306079+00:00",
+  "timestamp": "2025-07-24T00:32:45.328770+00:00",
   "repo": "PowerDNS/draft-edns-otel-trace-ids",
   "labels": [
     {
@@ -55,15 +55,15 @@
       "id": "I_kwDOPAkemM68_fFg",
       "title": "version number?",
       "url": "https://github.com/PowerDNS/draft-edns-otel-trace-ids/issues/1",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "Habbie",
       "authorAssociation": "MEMBER",
       "assignees": [],
       "labels": [],
       "body": "Should we spend one octet (the first of the payload) on a version number, in case OTel ever decides on new sizes for trace/span IDs etc.?",
       "createdAt": "2025-06-24T07:36:33Z",
-      "updatedAt": "2025-06-24T07:36:33Z",
-      "closedAt": null,
+      "updatedAt": "2025-07-22T08:28:03Z",
+      "closedAt": "2025-07-22T08:28:03Z",
       "comments": []
     },
     {
