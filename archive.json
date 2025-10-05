@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-10-02T00:27:38.443640+00:00",
+  "timestamp": "2025-10-05T00:31:39.136452+00:00",
   "repo": "PowerDNS/draft-edns-otel-trace-ids",
   "labels": [
     {
@@ -79,6 +79,22 @@
       "body": "Text copied from @omoerbeek  in https://github.com/PowerDNS/pdns/pull/15668#discussion_r2163184813\n\nThe offline discussion resulted in a summary of cases, which I will list below. This probably should be added to the draft\n\n- A service can act as a initiator, or receive DNS requests itself. A service can also send DNS requests to other services. \n- A service can either produce a telemetry stream itself or not. `sdig` is an example of a initiator that does not produce telemetry, rec is a both a receiver and producer of DNS messages and creates a telemetry stream. With this PR rec uses the incoming TraceID/SpanID, but does not send out any yet.\n-  If you're an initiator, you can create a TraceID and pass it on to the next in the chain.\n- If you as an initiator produce telemetry, you create a Span with an empty parent SpanID en a non-empty SpanID. You pass the SpanID and the TraceID to the next in the chain.\n- If you're an initiator that does not generate telemetry you pass an empty SpanID and a (non-empty) TraceID (this is the `sdig` case).\n- If you receive a TraceID and SpanID and you generate telemetry (you create Spans yourself), you use the incoming TraceID, and the Spans you create get as parent the incoming SpanID. If you do not create Spans yourself, you pass the received TraceID and SpanID to the next in the chain.\n",
       "createdAt": "2025-06-24T07:38:00Z",
       "updatedAt": "2025-06-24T07:44:57Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 3,
+      "id": "I_kwDOPAkemM7PdjBc",
+      "title": "Follow traceparent HTTP header more closely",
+      "url": "https://github.com/PowerDNS/draft-edns-otel-trace-ids/issues/3",
+      "state": "OPEN",
+      "author": "Woutifier",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "W3C has published a recommendation for what the header (in the HTTP world) should look like to pass the trace context.\nThe recommendation is at https://www.w3.org/TR/trace-context/#traceparent-header-field-values, they're apparently also working on a new draft at https://www.w3.org/TR/trace-context-2/#traceparent-header-field-values but there are no changes w.r.t. the fields used.\n\nImho it would make sense to try and mimic this as closely as possible, where it makes sense for us (DNS).\n\nThey have defined the following:\n- version field (1 byte)\n- trace-id (16 bytes)\n- parent-id (8 bytes)\n- trace-flags (1 byte (8 potential flags))\n\nWhich I think the current proposal is pretty close to but not quite the same. The main point where I think we _should_ deviate, and the proposal does already, is using a binary format, rather than a string representation.\n\nMain points where we do deviate and I think we shouldn't:\n1. parent-id is optional in the proposal, but not in the w3 defined traceheader.\n2. trace-flags are missing (although there is a 1 byte reserved field)\n\nI don't see a clear use case for having parent-id optional, if an implementer really wanted that it can always be randomly generated. The trace-flags implementers can choose to do something with, or not, but it would be nice to at least have it defined.",
+      "createdAt": "2025-10-03T10:35:27Z",
+      "updatedAt": "2025-10-03T10:35:27Z",
       "closedAt": null,
       "comments": []
     }
