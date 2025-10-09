@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-10-07T00:28:36.470558+00:00",
+  "timestamp": "2025-10-09T00:28:18.546037+00:00",
   "repo": "PowerDNS/draft-edns-otel-trace-ids",
   "labels": [
     {
@@ -78,9 +78,24 @@
       "labels": [],
       "body": "Text copied from @omoerbeek  in https://github.com/PowerDNS/pdns/pull/15668#discussion_r2163184813\n\nThe offline discussion resulted in a summary of cases, which I will list below. This probably should be added to the draft\n\n- A service can act as a initiator, or receive DNS requests itself. A service can also send DNS requests to other services. \n- A service can either produce a telemetry stream itself or not. `sdig` is an example of a initiator that does not produce telemetry, rec is a both a receiver and producer of DNS messages and creates a telemetry stream. With this PR rec uses the incoming TraceID/SpanID, but does not send out any yet.\n-  If you're an initiator, you can create a TraceID and pass it on to the next in the chain.\n- If you as an initiator produce telemetry, you create a Span with an empty parent SpanID en a non-empty SpanID. You pass the SpanID and the TraceID to the next in the chain.\n- If you're an initiator that does not generate telemetry you pass an empty SpanID and a (non-empty) TraceID (this is the `sdig` case).\n- If you receive a TraceID and SpanID and you generate telemetry (you create Spans yourself), you use the incoming TraceID, and the Spans you create get as parent the incoming SpanID. If you do not create Spans yourself, you pass the received TraceID and SpanID to the next in the chain.\n",
       "createdAt": "2025-06-24T07:38:00Z",
-      "updatedAt": "2025-06-24T07:44:57Z",
+      "updatedAt": "2025-10-08T12:42:46Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "Habbie",
+          "authorAssociation": "MEMBER",
+          "body": "@ableyjoe asked \"can I use this across organisational boundaries, to get trace/telemetry data from a remote auth for a query I sent it?\"\n\nThe answer is not \"stick a trace object in the returned EDNS option\" but perhaps part of the answer is \"the option can also be in response packets to tell the client what trace ID was picked by the server\"",
+          "createdAt": "2025-10-08T12:26:15Z",
+          "updatedAt": "2025-10-08T12:26:15Z"
+        },
+        {
+          "author": "Habbie",
+          "authorAssociation": "MEMBER",
+          "body": "from conversation on OARC Workshops channel:\n\nwe need 3 documents\n\n1. the EDNS option [in progress](https://powerdns.github.io/draft-edns-otel-trace-ids/draft-edns-otel-trace-ids.html)\n2. the PROXYv2 TLV definition (not DNS specific)\n3. PROXYv2 as trailing DNS data (which reminds me that I'm not sure PROXYv2 as a header on UDP DNS data is well defined currently, but there are enough implementations that people know what to do)\n\nand, for bonus points,\n\n4. a way to do PROXYv2 per question in a TCP/TLS session (because today it's per session)",
+          "createdAt": "2025-10-08T12:42:46Z",
+          "updatedAt": "2025-10-08T12:42:46Z"
+        }
+      ]
     },
     {
       "number": 3,
