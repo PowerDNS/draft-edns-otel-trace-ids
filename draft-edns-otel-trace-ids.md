@@ -1,6 +1,6 @@
 ---
-title: "Communicating OpenTelemetry Trace IDs in EDNS"
-abbrev: "EDNS OTTRACEIDS"
+title: "Communicating Distributed Trace IDs in EDNS"
+abbrev: "EDNS TRACEIDS"
 category: info
 
 docname: draft-edns-otel-trace-ids-latest
@@ -31,30 +31,48 @@ author:
     fullname: Peter van Dijk
     organization: PowerDNS.com B.V.
     email: peter.van.dijk@powerdns.com
+ -
+    fullname: Pieter Lexis
+    organization: PowerDNS.com B.V.
+    email: pieter.lexis@powerdns.com
 
 normative:
 
 informative:
+  OT.WEBSITE:
+    target: https://opentelemetry.io/
+    title: OpenTelemetry Website
+  CNCF.WEBSITE:
+    target: https://www.cncf.io/
+    title: Cloud Native Computing Foundation Website
 
 ...
 
 --- abstract
 
-TODO Abstract
-
+This document defines a new EDNS Option named TRACEID that is used to communicate an identifier for correlating events between DNS systems.
 
 --- middle
 
 # Introduction
 
-TODO Introduction
+In distributed systems or otherwise interacting systems, operators might want to correlate events or know how an incoming request moves through the system.
+To achieve this correlation, a tracing identifier is generated on the front end system that receives the initial request and passed to downstream systems.
+These downstream systems will generate data related to the request that can be collected and used in system health measurements or trouble shooting.
 
+This document defines a new EDNS{{!RFC6891}} option (TRACEID) to pass tracing identifiers between DNS servers.
 
 # Conventions and Definitions
 
 {::boilerplate bcp14-tagged}
 
+* This document uses DNS Terminology as defined in {{!RFC9499}}.
+
+* Base16 is the representation of arbitrary binary data by an even number of case-insensitive hexadecimal digits ({{!RFC4648, Section 8}}).
+
 # Wire Format
+
+The TRACEID option has the following wire format:
 
 ~~~ ascii-art
      0                   1
@@ -62,39 +80,118 @@ TODO Introduction
     +---------------+---------------+
  0: |        OPTION-CODE (TBD1)     |
     +---------------+---------------+
- 2: |    OPTION-LENGTH (18 or 26)   |
+ 2: |         OPTION-LENGTH         |
     +---------------+---------------+
- 4: |   VERSION (0) |   RESERVED    |
+ 4: |  VERSION (0)  | TRACE ID TYPE |
     +---------------+---------------+
- 6: |      TRACE ID (16 octets)     /
-    /                               /
-    |---------------+---------------+
-22: | SPAN ID (optional, 8 octets)  /
+ 6: |         TRACE ID DATA         /
     /                               /
     +---------------+---------------+
 
 ~~~
 
 Version (1 octet) has the value 0 for this specification.
-Reserved (1 octet) MUST also be set to 0.
-The Trace ID is 16 octets long and is mandatory (or not? if empty, receiver selects one, so that empty is just a "please trace" signal. Although then the sender could also just generate a trace ID).
-The optional Span ID is 8 octets long.
+Trace ID Type (1 octet) describes how the Trace ID data should be interpreted.
+Trace ID Data has a variable length, depending on the Trace ID Type.
+
+# Presentation Format
+
+Even though EDNS options will never appear in DNS zone files, its value could appear in logging or analysis of packet captures.
+The presentation format for TRACEID is as follows:
+
+~~~ ascii-art
+TRACEID=[mnemonic]:[data]
+~~~
+
+Where the `mnemonic` is the mnemonic defined for the ID Type and `data` is the ID Data represented as Base16.
+When an unknown Type is encountered, the `mnemonic` MUST be presented as `TYPEN`, where `N` is the decimal representation of the Trace ID Type without leading zeroes.
+
+# Trace ID Types
+
+This specification defines several values for Trace ID Type.
+
+
+| Type name     | Mnemonic      | Trace ID Type |
+| ------------- | ------------- | ------------- |
+| OpenTelemetry | OT            | 0             |
+| Private use   | PRIVATENNN (where NNN is the decimal representation of the Type) | 247 - 254     |
+| RESERVED      | RESERVED           | 255           |
+
+
+## OpenTelemetry (0)
+
+OpenTelemetry{{OT.WEBSITE}} is an open standard for telemetry data like metrics, logs and traces.
+It is maintained by the Cloud Native Computing Foundation (CNCF){{CNCF.WEBSITE}}.
+
+For OpenTelemetry traces, the TraceID Data field MUST contain a 16 octet Trace ID and MAY have an 8 octet Span ID following it.
+This makes the Trace ID data field either 16 or 24 octets long.
+
+## Private use (247 - 254)
+
+These Trace ID Types can be used for private tracing identifiers.
+
+## RESERVED (255)
+
+This Trace ID Type value is reserved for potential future expansion and MUST NOT be used.
+
+# Processing of TRACEID
+
+TRACEID SHOULD only be used after mutual agreement between the upstream and downstream server operators.
+
+Performing tracing SHOULD NOT impact DNS query processing.
+Hence, nameservers receiving a malformed TRACEID option or a TRACEID option with an unknown or unsupported Type ID SHOULD ignore this option an continue processing the query.
+It is RECOMMENDED to inform the operator of the nameserver, for example using logging, about malformed or unknown TRACEID options.
+
+Tracing information is collected outside of the DNS transaction and is independent of the DNS query processing.
+The inclusion of a TRACEID option in a query must be seen as a one-way signal from the requestor that tracing should be performed.
+Responders MUST NOT include a TRACEID option in responses, even to queries that contained a TRACEID option.
+
+## Access control
+
+It is RECOMMENDED to use access control on who can send TRACEID to initiate data collection, e.g. using IP address allow-lists, TSIG{{!RFC8945}}, or other methods.
+
+When a nameserver receives the TRACEID EDNS option from a system that is allowed to initiate tracing, it should perform any operations required to collect tracing information, as configured by the operator.
+The nameserver MAY include a TRACEID option in outgoing queries to trigger tracing in downstream servers.
+
+When a nameserver receives the TRACEID EDNS option from a system that is not allowed to initiate tracing, it MUST ignore the option and process the query as if no TRACEID option was present.
 
 # Security Considerations
 
 TODO Security
 
+* ACL
+* Mutual agreement
 
 # IANA Considerations
 
-This document has no IANA actions.
-
+TODO request IANA to create a Trace ID Type registry.
 
 --- back
+
+# Appendix A. Presentation Format Examples
+{:numbered="false"}
+
+An OpenTelemetry TraceID of 1234567890ABCDEF1234567890ABCDEF is presented as:
+
+~~~ ascii-art
+TRACEID=OT:1234567890ABCDEF1234567890ABCDEF
+~~~
+
+A private Type would be represented as:
+
+~~~ ascii-art
+TRACEID=PRIVATE250:ABCDEF1234
+~~~
+
+An unknown Type would be presented as:
+
+~~~ ascii-art
+TRACEID=TYPE19:FE1234
+~~~
 
 # Acknowledgments
 {:numbered="false"}
 
 TODO acknowledge.
 
-Job Snijders, Wouter de Vries, 
+Job Snijders, Wouter de Vries,
