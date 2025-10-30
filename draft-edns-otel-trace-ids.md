@@ -106,6 +106,40 @@ TRACEID=[mnemonic]:[data]
 Where the `mnemonic` is the mnemonic defined for the ID Type and `data` is the ID Data represented as Base16.
 When an unknown Type is encountered, the `mnemonic` MUST be presented as `TYPEN`, where `N` is the decimal representation of the Trace ID Type without leading zeroes.
 
+# Processing of TRACEID
+
+TRACEID SHOULD only be used after mutual agreement between the upstream and downstream server operators.
+
+Performing tracing SHOULD NOT impact DNS query processing.
+Hence, nameservers receiving a malformed TRACEID option or a TRACEID option with an unknown or unsupported Type ID SHOULD ignore this option and continue processing the query.
+It is RECOMMENDED to inform the operator of the nameserver, for example using logging, about malformed or unknown TRACEID options.
+
+Tracing information is collected outside of the DNS transaction and is independent of the DNS query processing.
+The inclusion of a TRACEID option in a query must be seen as a signal from the requestor that tracing should be performed.
+
+This signal can come in two forms; with or without Trace ID Data.
+A query with Trace ID data signals "perform tracing and use this Trace ID".
+A query without Trace ID data signals "perform tracing and inform me of the Trace ID".
+
+## Requests with Trace ID Data
+
+Queries that contain the TRACEID option with Trace ID Data, should perform data collection as configured by the operator.
+As the Trace ID is known, responders MUST NOT include a TRACEID option in responses to queries that contained a TRACEID option.
+
+## Requests without Trace ID Data
+
+Queries that have the TRACEID option without Trace ID Data, should generate a Trace ID and perform data collection as configured by the operator.
+The responder SHOULD include a TRACEID option with Trace ID Data in the response.
+
+## Access Control
+
+It is RECOMMENDED to use access control on who can send TRACEID to initiate data collection, e.g. using IP address allow-lists, TSIG{{!RFC8945}}, or other methods.
+
+When a nameserver receives the TRACEID EDNS option from a system that is allowed to initiate tracing, it should perform any operations required to collect tracing information, as configured by the operator.
+The nameserver MAY include a TRACEID option in outgoing queries to trigger tracing in downstream servers.
+
+When a nameserver receives the TRACEID EDNS option from a system that is not allowed to initiate tracing, it MUST ignore the option and process the query as if no TRACEID option was present.
+
 # Trace ID Types
 
 This specification defines several values for Trace ID Type.
@@ -123,8 +157,10 @@ This specification defines several values for Trace ID Type.
 OpenTelemetry{{OT.WEBSITE}} is an open standard for telemetry data like metrics, logs and traces.
 It is maintained by the Cloud Native Computing Foundation (CNCF){{CNCF.WEBSITE}}.
 
-For OpenTelemetry traces, the TraceID Data field MUST contain a 16 octet Trace ID and MAY have an 8 octet Span ID following it.
+For OpenTelemetry traces that contain Trace ID Data, the TraceID Data field MUST contain a 16 octet Trace ID and MAY have an 8 octet Span ID following it.
 This makes the Trace ID data field either 16 or 24 octets long.
+
+For responses that need a TRACEID option, the TraceID Data field MUST contain a 16 octet Trace ID and MAY have an 8 octet Span ID following it.
 
 ## Private use (247 - 254)
 
@@ -134,26 +170,6 @@ These Trace ID Types can be used for private tracing identifiers.
 
 This Trace ID Type value is reserved for potential future expansion and MUST NOT be used.
 
-# Processing of TRACEID
-
-TRACEID SHOULD only be used after mutual agreement between the upstream and downstream server operators.
-
-Performing tracing SHOULD NOT impact DNS query processing.
-Hence, nameservers receiving a malformed TRACEID option or a TRACEID option with an unknown or unsupported Type ID SHOULD ignore this option an continue processing the query.
-It is RECOMMENDED to inform the operator of the nameserver, for example using logging, about malformed or unknown TRACEID options.
-
-Tracing information is collected outside of the DNS transaction and is independent of the DNS query processing.
-The inclusion of a TRACEID option in a query must be seen as a one-way signal from the requestor that tracing should be performed.
-Responders MUST NOT include a TRACEID option in responses, even to queries that contained a TRACEID option.
-
-## Access control
-
-It is RECOMMENDED to use access control on who can send TRACEID to initiate data collection, e.g. using IP address allow-lists, TSIG{{!RFC8945}}, or other methods.
-
-When a nameserver receives the TRACEID EDNS option from a system that is allowed to initiate tracing, it should perform any operations required to collect tracing information, as configured by the operator.
-The nameserver MAY include a TRACEID option in outgoing queries to trigger tracing in downstream servers.
-
-When a nameserver receives the TRACEID EDNS option from a system that is not allowed to initiate tracing, it MUST ignore the option and process the query as if no TRACEID option was present.
 
 # Security Considerations
 
