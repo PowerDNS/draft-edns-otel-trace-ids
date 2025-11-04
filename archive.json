@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-11-02T00:32:46.324539+00:00",
+  "timestamp": "2025-11-04T00:30:04.488868+00:00",
   "repo": "PowerDNS/draft-edns-otel-trace-ids",
   "labels": [
     {
@@ -127,7 +127,7 @@
       "labels": [],
       "body": "This commit changes the text of the document in several ways:\n\n* It names the EDNS option TRACEID\n* It changes the reserved field to the tracing type identifier\n  * Adds OpenTelemetry as a type\n  * Defines 8 private types\n  * Defines 1 reserved type\n* Adds a presentation format for the TRACEID option\n* Describes how nameservers should handle TRACEID\n\nAll these changes do *not* change anything for the current\nimplementation in PowerDNS Recursor and dnsdist.\n",
       "createdAt": "2025-10-30T13:13:23Z",
-      "updatedAt": "2025-10-30T16:07:57Z",
+      "updatedAt": "2025-11-03T09:19:21Z",
       "baseRepository": "PowerDNS/draft-edns-otel-trace-ids",
       "baseRefName": "main",
       "baseRefOid": "43259970c44c68dc656903f6c514365015960719",
@@ -237,6 +237,26 @@
               "body": "Note that for just an option code, this draft does not need to end up getting published as RFC. For getting a new registry, it does need to become an RFC.",
               "createdAt": "2025-10-30T14:08:38Z",
               "updatedAt": "2025-10-30T14:08:38Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOPAkemM7LQecy",
+          "commit": {
+            "abbreviatedOid": "47a0a63"
+          },
+          "author": "pieterlexis",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-11-03T09:19:21Z",
+          "updatedAt": "2025-11-03T09:19:21Z",
+          "comments": [
+            {
+              "originalPosition": 160,
+              "body": "Let's set some time aside during the team meeting next week to discuss this.",
+              "createdAt": "2025-11-03T09:19:21Z",
+              "updatedAt": "2025-11-03T09:19:22Z"
             }
           ]
         }
