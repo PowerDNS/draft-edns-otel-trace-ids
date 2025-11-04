@@ -1,6 +1,6 @@
 ---
 title: "Communicating Distributed Trace IDs in EDNS"
-abbrev: "EDNS TRACEPARENTS"
+abbrev: "EDNS TRACEPARENT"
 category: info
 
 docname: draft-edns-otel-trace-ids-latest
