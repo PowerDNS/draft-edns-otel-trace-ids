@@ -39,12 +39,9 @@ author:
 normative:
 
 informative:
-  OT.WEBSITE:
-    target: https://opentelemetry.io/
-    title: OpenTelemetry Website
-  CNCF.WEBSITE:
-    target: https://www.cncf.io/
-    title: Cloud Native Computing Foundation Website
+  W3C.trace-context-binary:
+    target: https://w3c.github.io/trace-context-binary/
+    title: 'Trace Context: binary protocol'
 
 ...
 
@@ -82,17 +79,21 @@ The TRACEPARENT option has the following wire format:
     +---------------+---------------+
  2: |         OPTION-LENGTH         |
     +---------------+---------------+
- 4: |  VERSION (0)  | TRACE ID TYPE |
+ 4: |        TRACEPARENT DATA       /
     +---------------+---------------+
- 6: |         TRACE ID DATA         /
-    /                               /
-    +---------------+---------------+
-
 ~~~
 
-Version (1 octet) has the value 0 for this specification.
-Trace ID Type (1 octet) describes how the Trace ID data should be interpreted.
-Trace ID Data has a variable length, depending on the Trace ID Type.
+The TRACEPARENT DATA field contains the bytes of the Traceparent Binary Format as defined in section 2.1 of {{W3C.trace-context-binary}}.
+For completeness, this format is repeated here:
+
+~~~ ascii-art
+traceparent     = version version_format
+version         = 1BYTE
+version_format  = "{ 0x0 }" trace-id "{ 0x1 }" parent-id "{ 0x2 }" trace-flags
+trace-id        = 16BYTES
+parent-id       = 8BYTES
+trace-flags     = 1BYTE
+~~~
 
 # Presentation Format
 
@@ -100,76 +101,44 @@ Even though EDNS options will never appear in DNS zone files, its value could ap
 The presentation format for TRACEPARENT is as follows:
 
 ~~~ ascii-art
-TRACEPARENT=[mnemonic]:[data]
+TRACEPARENT=[trace-id],[parent-id],[trace-flags]
 ~~~
 
-Where the `mnemonic` is the mnemonic defined for the ID Type and `data` is the ID Data represented as Base16.
-When an unknown Type is encountered, the `mnemonic` MUST be presented as `TYPEN`, where `N` is the decimal representation of the Trace ID Type without leading zeroes.
+Where each field is represented as Base16.
 
 # Processing of TRACEPARENT
 
 TRACEPARENT SHOULD only be used after mutual agreement between the upstream and downstream server operators.
+A nameserver MAY include a TRACEPARENT option in outgoing queries to trigger tracing in downstream servers.
 
 Performing tracing SHOULD NOT impact DNS query processing.
-Hence, nameservers receiving a malformed TRACEPARENT option or a TRACEPARENT option with an unknown or unsupported Type ID SHOULD ignore this option and continue processing the query.
-It is RECOMMENDED to inform the operator of the nameserver, for example using logging, about malformed or unknown TRACEPARENT options.
+Hence, nameservers receiving a malformed TRACEPARENT option SHOULD ignore this option and continue processing the query.
+It is RECOMMENDED to inform the operator of the nameserver, for example using logging, about malformed TRACEPARENT options.
 
 Tracing information is collected outside of the DNS transaction and is independent of the DNS query processing.
 The inclusion of a TRACEPARENT option in a query must be seen as a signal from the requestor that tracing should be performed.
 
 This signal can come in two forms; with or without Trace ID Data.
 A query with Trace ID data signals "perform tracing and use this Trace ID".
-A query without Trace ID data signals "perform tracing and inform me of the Trace ID".
+A query with the EDNS option without Trace Parent data signals "perform tracing and inform me of the Trace ID".
 
 ## Requests with Trace ID Data
 
 Queries that contain the TRACEPARENT option with Trace ID Data, should perform data collection as configured by the operator.
-As the Trace ID is known, responders MUST NOT include a TRACEPARENT option in responses to queries that contained a TRACEPARENT option.
+As the Trace Parent is known to the requester and receiver, responders MUST NOT include a TRACEPARENT option in responses to queries that contained a TRACEPARENT option.
 
 ## Requests without Trace ID Data
 
-Queries that have the TRACEPARENT option without Trace ID Data, should generate a Trace ID and perform data collection as configured by the operator.
-The responder SHOULD include a TRACEPARENT option with Trace ID Data in the response.
+Queries that have the TRACEPARENT option without Trace Parent Data, should generate these values themselves and perform data collection as configured by the operator.
+The responder SHOULD include a TRACEPARENT option in the response containing this information.
 
 ## Access Control
 
 It is RECOMMENDED to use access control on who can send TRACEPARENT to initiate data collection, e.g. using IP address allow-lists, TSIG{{!RFC8945}}, or other methods.
 
 When a nameserver receives the TRACEPARENT EDNS option from a system that is allowed to initiate tracing, it should perform any operations required to collect tracing information, as configured by the operator.
-The nameserver MAY include a TRACEPARENT option in outgoing queries to trigger tracing in downstream servers.
 
 When a nameserver receives the TRACEPARENT EDNS option from a system that is not allowed to initiate tracing, it MUST ignore the option and process the query as if no TRACEPARENT option was present.
-
-# Trace ID Types
-
-This specification defines several values for Trace ID Type.
-
-
-| Type name     | Mnemonic      | Trace ID Type |
-| ------------- | ------------- | ------------- |
-| OpenTelemetry | OT            | 0             |
-| Private use   | PRIVATENNN (where NNN is the decimal representation of the Type) | 247 - 254     |
-| RESERVED      | RESERVED           | 255           |
-
-
-## OpenTelemetry (0)
-
-OpenTelemetry{{OT.WEBSITE}} is an open standard for telemetry data like metrics, logs and traces.
-It is maintained by the Cloud Native Computing Foundation (CNCF){{CNCF.WEBSITE}}.
-
-For OpenTelemetry traces that contain Trace ID Data, the TraceID Data field MUST contain a 16 octet Trace ID and MAY have an 8 octet Span ID following it.
-This makes the Trace ID data field either 16 or 24 octets long.
-
-For responses that need a TRACEPARENT option, the TraceID Data field MUST contain a 16 octet Trace ID and MAY have an 8 octet Span ID following it.
-
-## Private use (247 - 254)
-
-These Trace ID Types can be used for private tracing identifiers.
-
-## RESERVED (255)
-
-This Trace ID Type value is reserved for potential future expansion and MUST NOT be used.
-
 
 # Security Considerations
 
@@ -180,29 +149,17 @@ TODO Security
 
 # IANA Considerations
 
-TODO request IANA to create a Trace ID Type registry.
+None.
 
 --- back
 
 # Appendix A. Presentation Format Examples
 {:numbered="false"}
 
-An OpenTelemetry TraceID of 1234567890ABCDEF1234567890ABCDEF is presented as:
+An OpenTelemetry Trace ID of 1234567890ABCDEF1234567890ABCDEF, Parent ID of FEDCBA0987654321, and no Trace Flags is presented as:
 
 ~~~ ascii-art
-TRACEPARENT=OT:1234567890ABCDEF1234567890ABCDEF
-~~~
-
-A private Type would be represented as:
-
-~~~ ascii-art
-TRACEPARENT=PRIVATE250:ABCDEF1234
-~~~
-
-An unknown Type would be presented as:
-
-~~~ ascii-art
-TRACEPARENT=TYPE19:FE1234
+TRACEPARENT=1234567890ABCDEF1234567890ABCDEF,FEDCBA0987654321,00
 ~~~
 
 # Acknowledgments
