@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-11-04T00:30:04.488868+00:00",
+  "timestamp": "2025-11-06T00:30:38.776138+00:00",
   "repo": "PowerDNS/draft-edns-otel-trace-ids",
   "labels": [
     {
@@ -109,9 +109,45 @@
       "labels": [],
       "body": "W3C has published a recommendation for what the header (in the HTTP world) should look like to pass the trace context.\nThe recommendation is at https://www.w3.org/TR/trace-context/#traceparent-header-field-values, they're apparently also working on a new draft at https://www.w3.org/TR/trace-context-2/#traceparent-header-field-values but there are no changes w.r.t. the fields used.\n\nImho it would make sense to try and mimic this as closely as possible, where it makes sense for us (DNS).\n\nThey have defined the following:\n- version field (1 byte)\n- trace-id (16 bytes)\n- parent-id (8 bytes)\n- trace-flags (1 byte (8 potential flags))\n\nWhich I think the current proposal is pretty close to but not quite the same. The main point where I think we _should_ deviate, and the proposal does already, is using a binary format, rather than a string representation.\n\nMain points where we do deviate and I think we shouldn't:\n1. parent-id is optional in the proposal, but not in the w3 defined traceheader.\n2. trace-flags are missing (although there is a 1 byte reserved field)\n\nI don't see a clear use case for having parent-id optional, if an implementer really wanted that it can always be randomly generated. The trace-flags implementers can choose to do something with, or not, but it would be nice to at least have it defined.",
       "createdAt": "2025-10-03T10:35:27Z",
-      "updatedAt": "2025-10-03T10:35:27Z",
+      "updatedAt": "2025-11-04T19:49:08Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "Habbie",
+          "authorAssociation": "MEMBER",
+          "body": "Proposal:\n\n* we put trace-flags in our reserved byte (so we don't use the http header order, but we can store the exact same fields)\n* we say \"pass traceid+parentid OR pass none\". Passing none is a \"please trace\" signal from a client that itself does not participate in tracing. Clients that passed an empty option may get it back in the response with IDs filled in.\n* add a reference https://www.w3.org/TR/trace-context/ and blame it for most of our choices\n\nI wonder:\n\n* should we do anything with `tracestate`? my feeling is no",
+          "createdAt": "2025-11-04T11:06:42Z",
+          "updatedAt": "2025-11-04T11:06:42Z"
+        },
+        {
+          "author": "Habbie",
+          "authorAssociation": "MEMBER",
+          "body": "the trace-context spec does not mention \"OpenTelemetry\" explicitly. I wonder if we should rename our proposed EDNS option name to match the w3c spec more closely.",
+          "createdAt": "2025-11-04T11:08:06Z",
+          "updatedAt": "2025-11-04T11:08:06Z"
+        },
+        {
+          "author": "Habbie",
+          "authorAssociation": "MEMBER",
+          "body": "Alternative proposal: we shorten our document by 90% by referring to https://w3c.github.io/trace-context-binary/\n\nWe rename the EDNS option to `TRACE-PARENT`",
+          "createdAt": "2025-11-04T11:13:37Z",
+          "updatedAt": "2025-11-04T13:13:16Z"
+        },
+        {
+          "author": "Habbie",
+          "authorAssociation": "MEMBER",
+          "body": "> Alternative proposal: we shorten our document by 90% by referring to https://w3c.github.io/trace-context-binary/\n\non the w3c slack I have learned that this draft is abandoned. Will see if they have any other input, or plans to revive it given interest in doing this in DNS and PROXYv2",
+          "createdAt": "2025-11-04T19:42:44Z",
+          "updatedAt": "2025-11-04T19:42:44Z"
+        },
+        {
+          "author": "Habbie",
+          "authorAssociation": "MEMBER",
+          "body": "> Alternative proposal: we shorten our document by 90% by referring to https://w3c.github.io/trace-context-binary/\n\n\"This document was abandoned. DO NOT USE.\"\n\nwell, that escalated quickly\n",
+          "createdAt": "2025-11-04T19:49:08Z",
+          "updatedAt": "2025-11-04T19:49:08Z"
+        }
+      ]
     }
   ],
   "pulls": [
@@ -127,13 +163,13 @@
       "labels": [],
       "body": "This commit changes the text of the document in several ways:\n\n* It names the EDNS option TRACEID\n* It changes the reserved field to the tracing type identifier\n  * Adds OpenTelemetry as a type\n  * Defines 8 private types\n  * Defines 1 reserved type\n* Adds a presentation format for the TRACEID option\n* Describes how nameservers should handle TRACEID\n\nAll these changes do *not* change anything for the current\nimplementation in PowerDNS Recursor and dnsdist.\n",
       "createdAt": "2025-10-30T13:13:23Z",
-      "updatedAt": "2025-11-03T09:19:21Z",
+      "updatedAt": "2025-11-04T14:58:06Z",
       "baseRepository": "PowerDNS/draft-edns-otel-trace-ids",
       "baseRefName": "main",
       "baseRefOid": "43259970c44c68dc656903f6c514365015960719",
       "headRepository": "pieterlexis/draft-edns-otel-trace-ids",
       "headRefName": "updates",
-      "headRefOid": "5ec94a7affde5707cf9abcdf3039aefd704c3ce8",
+      "headRefOid": "8f38e4320c7c3a5f83c212248566b1c4992db98c",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
@@ -257,6 +293,26 @@
               "body": "Let's set some time aside during the team meeting next week to discuss this.",
               "createdAt": "2025-11-03T09:19:21Z",
               "updatedAt": "2025-11-03T09:19:22Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOPAkemM7LqgGI",
+          "commit": {
+            "abbreviatedOid": "cf91b91"
+          },
+          "author": "Habbie",
+          "authorAssociation": "MEMBER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-11-04T14:57:31Z",
+          "updatedAt": "2025-11-04T14:58:06Z",
+          "comments": [
+            {
+              "originalPosition": 98,
+              "body": "https://www.w3.org/TR/trace-context/#version-format ?",
+              "createdAt": "2025-11-04T14:57:31Z",
+              "updatedAt": "2025-11-04T14:58:06Z"
             }
           ]
         }
