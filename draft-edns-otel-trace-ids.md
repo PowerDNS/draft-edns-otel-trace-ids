@@ -37,11 +37,11 @@ author:
     email: pieter.lexis@powerdns.com
 
 normative:
+  W3C.trace-context:
+    target: https://www.w3.org/TR/2021/REC-trace-context-1-20211123/
+    display: 'W3C Recommendation: Trace Context'
 
 informative:
-  W3C.trace-context-binary:
-    target: https://w3c.github.io/trace-context-binary/
-    title: 'Trace Context: binary protocol'
 
 ...
 
@@ -57,7 +57,7 @@ In distributed systems or otherwise interacting systems, operators might want to
 To achieve this correlation, a tracing identifier is generated on the front end system that receives the initial request and passed to downstream systems.
 These downstream systems will generate data related to the request that can be collected and used in system health measurements or trouble shooting.
 
-This document defines a new EDNS{{!RFC6891}} option (TRACEPARENT) to pass tracing identifiers between DNS servers.
+This document defines a new EDNS{{!RFC6891}} option (TRACEPARENT) to pass tracing identifiers between DNS servers. It follows the W3C recommendation for Trace Context and the traceparent HTTP header, version 00{{!W3C.trace-context}}.
 
 # Conventions and Definitions
 
@@ -72,44 +72,53 @@ This document defines a new EDNS{{!RFC6891}} option (TRACEPARENT) to pass tracin
 The TRACEPARENT option has the following wire format:
 
 ~~~ ascii-art
-     0                   1
-     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
-    +---------------+---------------+
- 0: |        OPTION-CODE (TBD1)     |
-    +---------------+---------------+
- 2: |         OPTION-LENGTH         |
-    +---------------+---------------+
- 4: |        TRACEPARENT DATA       /
-    +---------------+---------------+
+       0                   1
+       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      +---------------+---------------+
+ 0:   |        OPTION-CODE (TBD1)     |
+      +---------------+---------------+
+ 2:   |         OPTION-LENGTH         |
+      +---------------+---------------+
+ 4:   |    VERSION    |    RESERVED   |
+      +---------------+---------------+
+ 6:   |       TRACEPARENT DATA        /
+      +---------------+---------------+
 ~~~
 
-The TRACEPARENT DATA field contains the bytes of the Traceparent Binary Format as defined in section 2.1 of {{W3C.trace-context-binary}}.
-For completeness, this format is repeated here:
+The VERSION field defined in this specification MUST be set to 0.
+
+The TRACEPARENT DATA field for version 0 contains 3 fields: a 16 byte trace-id, an 8 byte parent-id, a 1 byte trace-flags field.
 
 ~~~ ascii-art
-traceparent     = version version_format
-version         = 1BYTE
-version_format  = "{ 0x0 }" trace-id "{ 0x1 }" parent-id "{ 0x2 }" trace-flags
-trace-id        = 16BYTES
-parent-id       = 8BYTES
-trace-flags     = 1BYTE
+       0                   1
+       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+      +---------------+---------------+
+ 0:   |           TRACE-ID            /
+      /                               |
+      +---------------+---------------+
+ 16:  |           PARENT-ID           /
+      /                               |
+      +---------------+---------------+
+ 24:  |  TRACEFLAGS   |
+      +---------------+
 ~~~
 
 # Presentation Format
 
 Even though EDNS options will never appear in DNS zone files, its value could appear in logging or analysis of packet captures.
-The presentation format for TRACEPARENT is as follows:
+The presentation format for TRACEPARENT follows the traceparent HTTP header from Section 3.2 of {{!W3C.trace-context}}:
 
 ~~~ ascii-art
-TRACEPARENT=[trace-id],[parent-id],[trace-flags]
+TRACEPARENT=[version]-[trace-id]-[parent-id]-[trace-flags]
 ~~~
 
-Where each field is represented as Base16.
+Where each field is represented as Base16 with the hexadecimal characters in lowercase.
 
 # Processing of TRACEPARENT
 
 TRACEPARENT SHOULD only be used after mutual agreement between the upstream and downstream server operators.
 A nameserver MAY include a TRACEPARENT option in outgoing queries to trigger tracing in downstream servers.
+This model follows the recommendations of Section 4 of {{!W3C.trace-context}}.
 
 Performing tracing SHOULD NOT impact DNS query processing.
 Hence, nameservers receiving a malformed TRACEPARENT option SHOULD ignore this option and continue processing the query.
@@ -159,7 +168,7 @@ None.
 An OpenTelemetry Trace ID of 1234567890ABCDEF1234567890ABCDEF, Parent ID of FEDCBA0987654321, and no Trace Flags is presented as:
 
 ~~~ ascii-art
-TRACEPARENT=1234567890ABCDEF1234567890ABCDEF,FEDCBA0987654321,00
+TRACEPARENT=00-1234567890abcdef1234567890abcdef-fedcba0987654321-00
 ~~~
 
 # Acknowledgments
