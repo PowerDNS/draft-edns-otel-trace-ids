@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-11-06T00:30:38.776138+00:00",
+  "timestamp": "2025-11-13T00:30:51.426564+00:00",
   "repo": "PowerDNS/draft-edns-otel-trace-ids",
   "labels": [
     {
@@ -163,13 +163,13 @@
       "labels": [],
       "body": "This commit changes the text of the document in several ways:\n\n* It names the EDNS option TRACEID\n* It changes the reserved field to the tracing type identifier\n  * Adds OpenTelemetry as a type\n  * Defines 8 private types\n  * Defines 1 reserved type\n* Adds a presentation format for the TRACEID option\n* Describes how nameservers should handle TRACEID\n\nAll these changes do *not* change anything for the current\nimplementation in PowerDNS Recursor and dnsdist.\n",
       "createdAt": "2025-10-30T13:13:23Z",
-      "updatedAt": "2025-11-04T14:58:06Z",
+      "updatedAt": "2025-11-11T11:37:32Z",
       "baseRepository": "PowerDNS/draft-edns-otel-trace-ids",
       "baseRefName": "main",
       "baseRefOid": "43259970c44c68dc656903f6c514365015960719",
       "headRepository": "pieterlexis/draft-edns-otel-trace-ids",
       "headRefName": "updates",
-      "headRefOid": "8f38e4320c7c3a5f83c212248566b1c4992db98c",
+      "headRefOid": "ecf5c2f7286bc12dd23e5a3eeeb0b1af4ec077e0",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
