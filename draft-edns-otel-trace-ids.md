@@ -85,9 +85,22 @@ The TRACEPARENT option has the following wire format:
       +---------------+---------------+
 ~~~
 
-The VERSION field defined in this specification MUST be set to 0.
+The VERSION field indicates how the TRACEPARENT DATA should be interpreted.
+This document defines the following versions:
 
-The TRACEPARENT DATA field for version 0 contains 3 fields: a 16 byte trace-id, an 8 byte parent-id, a 1 byte trace-flags field.
+
+| Version | Usage                    |
+| --------| ------------------------ |
+| 0       | Defined in this document |
+| 252-255 | Private use              |
+
+
+The RESERVED field is for future expansion and MUST be set to 0.
+
+## Version 0
+
+The TRACEPARENT DATA field for version 0 contains 3 fields: a 16 byte trace-id, an 8 byte parent-id, and a 1 byte trace-flags field.
+All these fields are MANDATORY.
 
 ~~~ ascii-art
        0                   1
@@ -106,10 +119,19 @@ The TRACEPARENT DATA field for version 0 contains 3 fields: a 16 byte trace-id, 
 # Presentation Format
 
 Even though EDNS options will never appear in DNS zone files, its value could appear in logging or analysis of packet captures.
-The presentation format for TRACEPARENT follows the traceparent HTTP header from Section 3.2 of {{!W3C.trace-context}}:
+
+The presentation format for TRACEPARENT version 0 follows the traceparent HTTP header from Section 3.2 of {{!W3C.trace-context}}:
 
 ~~~ ascii-art
 TRACEPARENT=[version]-[trace-id]-[parent-id]-[trace-flags]
+~~~
+
+Where each field is represented as Base16 with the hexadecimal characters in lowercase.
+
+The presentation format for unknown and private versions is
+
+~~~ ascii-art
+TRACEPARENT=[version]-[traceparent-data]
 ~~~
 
 Where each field is represented as Base16 with the hexadecimal characters in lowercase.
@@ -123,23 +145,12 @@ This model follows the recommendations of Section 4 of {{!W3C.trace-context}}.
 Performing tracing SHOULD NOT impact DNS query processing.
 Hence, nameservers receiving a malformed TRACEPARENT option SHOULD ignore this option and continue processing the query.
 It is RECOMMENDED to inform the operator of the nameserver, for example using logging, about malformed TRACEPARENT options.
+An nameserver MAY ignore TRACEPARENT options for any reason, including resource constraints.
 
 Tracing information is collected outside of the DNS transaction and is independent of the DNS query processing.
-The inclusion of a TRACEPARENT option in a query must be seen as a signal from the requestor that tracing should be performed.
+The inclusion of a TRACEPARENT option in a query must be seen as a signal from the requester that tracing should be performed.
 
-This signal can come in two forms; with or without Trace ID Data.
-A query with Trace ID data signals "perform tracing and use this Trace ID".
-A query with the EDNS option without Trace Parent data signals "perform tracing and inform me of the Trace ID".
-
-## Requests with Trace ID Data
-
-Queries that contain the TRACEPARENT option with Trace ID Data, should perform data collection as configured by the operator.
-As the Trace Parent is known to the requester and receiver, responders MUST NOT include a TRACEPARENT option in responses to queries that contained a TRACEPARENT option.
-
-## Requests without Trace ID Data
-
-Queries that have the TRACEPARENT option without Trace Parent Data, should generate these values themselves and perform data collection as configured by the operator.
-The responder SHOULD include a TRACEPARENT option in the response containing this information.
+The TRACEPARENT option SHOULD NOT appear in responses from nameserver and it's inclusion in a response is not defined in this document.
 
 ## Access Control
 
@@ -147,7 +158,7 @@ It is RECOMMENDED to use access control on who can send TRACEPARENT to initiate 
 
 When a nameserver receives the TRACEPARENT EDNS option from a system that is allowed to initiate tracing, it should perform any operations required to collect tracing information, as configured by the operator.
 
-When a nameserver receives the TRACEPARENT EDNS option from a system that is not allowed to initiate tracing, it MUST ignore the option and process the query as if no TRACEPARENT option was present.
+When a nameserver receives the TRACEPARENT EDNS option from a system that is not allowed to initiate tracing, it MUST ignore the option and process the query as if no TRACEPARENT option were present.
 
 # Security Considerations
 
@@ -174,6 +185,4 @@ TRACEPARENT=00-1234567890abcdef1234567890abcdef-fedcba0987654321-00
 # Acknowledgments
 {:numbered="false"}
 
-TODO acknowledge.
-
-Job Snijders, Wouter de Vries,
+The authors would like to acknowledge Job Snijders and Wouter de Vries for their initial ideas and expertise of OpenTelemetry.
