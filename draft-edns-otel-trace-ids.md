@@ -144,7 +144,7 @@ TRACEPARENT=[version]-[traceparent-data]
 
 Where each field is represented as Base16 with the hexadecimal characters in lowercase.
 
-# Processing of TRACEPARENT
+# Processing of TRACEPARENT {#processing}
 
 TRACEPARENT SHOULD only be used after mutual agreement between the upstream and downstream server operators.
 A nameserver MAY include a TRACEPARENT option in outgoing queries to trigger tracing in downstream servers.
@@ -160,7 +160,7 @@ The inclusion of a TRACEPARENT option in a query must be seen as a signal from t
 
 The TRACEPARENT option SHOULD NOT appear in responses from nameserver and it's inclusion in a response is not defined in this document.
 
-## Access Control
+## Access Control {#acl}
 
 It is RECOMMENDED to use access control on who can send TRACEPARENT to initiate data collection, e.g. using IP address allow-lists, TSIG{{!RFC8945}}, or other methods.
 
@@ -170,10 +170,9 @@ When a nameserver receives the TRACEPARENT EDNS option from a system that is not
 
 # Security Considerations
 
-TODO Security
-
-* ACL
-* Mutual agreement
+Tracing could use significant system resources and hence should be limited.
+As described in {{processing}} and {{acl}}, tracing should only be done after after mutual agreement and access controls should be used.
+Other limitations that could be implemented are load-based, where the nameserver decides whether to enable tracing based on the system load, or based on a probability factor.
 
 # IANA Considerations
 
