@@ -1,0 +1,315 @@
+
+
+
+
+Network Working Group                                           P. Lexis
+Internet-Draft                                               O. Moerbeek
+Intended status: Informational                               P. van Dijk
+Expires: 14 March 2027                                 PowerDNS.com B.V.
+                                                                 S. Kerr
+                                                                     IBM
+                                                             W. de Vries
+                                                              Cloudflare
+                                                       10 September 2026
+
+
+              Communicating Distributed Trace IDs in EDNS
+                    draft-edns-otel-trace-ids-latest
+
+Abstract
+
+   This document defines a new EDNS Option named TRACEPARENT that is
+   used to communicate an identifier for correlating events between DNS
+   systems.
+
+About This Document
+
+   This note is to be removed before publishing as an RFC.
+
+   The latest revision of this draft can be found at
+   https://PowerDNS.github.io/draft-edns-otel-trace-ids/draft-edns-otel-
+   trace-ids.html.  Status information for this document may be found at
+   https://datatracker.ietf.org/doc/draft-edns-otel-trace-ids/.
+
+   Source for this draft and an issue tracker can be found at
+   https://github.com/PowerDNS/draft-edns-otel-trace-ids.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 14 March 2027.
+
+Copyright Notice
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.
+
+Table of Contents
+
+   1.  Introduction
+   2.  Conventions and Definitions
+   3.  Wire Format
+     3.1.  Version 0
+   4.  Presentation Format
+   5.  Processing of TRACEPARENT
+     5.1.  Access Control
+   6.  Security Considerations
+   7.  IANA Considerations
+   8.  Normative References
+   Appendix A.  Presentation Format Examples
+   Acknowledgments
+   Authors' Addresses
+
+1.  Introduction
+
+   In distributed systems or otherwise interacting systems, operators
+   might want to correlate events or know how an incoming request moves
+   through the system.  To achieve this correlation, a tracing
+   identifier is generated on the front end system that receives the
+   initial request and passed to downstream systems.  These downstream
+   systems will generate data related to the request that can be
+   collected and used in system health measurements or trouble shooting.
+
+   This document defines a new EDNS[RFC6891] option (TRACEPARENT) to
+   pass tracing identifiers between DNS servers.  It follows the W3C
+   recommendation for Trace Context and the traceparent HTTP header,
+   version 00[W3C.trace-context].
+
+2.  Conventions and Definitions
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in
+   BCP 14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+   *  This document uses DNS Terminology as defined in [RFC9499].
+
+   *  Base16 is the representation of arbitrary binary data by an even
+      number of case-insensitive hexadecimal digits ([RFC4648],
+      Section 8).
+
+3.  Wire Format
+
+   The TRACEPARENT option has the following wire format:
+
+          0                   1
+          0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+         +---------------+---------------+
+    0:   |        OPTION-CODE (TBD1)     |
+         +---------------+---------------+
+    2:   |         OPTION-LENGTH         |
+         +---------------+---------------+
+    4:   |    VERSION    |    RESERVED   |
+         +---------------+---------------+
+    6:   |       TRACEPARENT DATA        /
+         +---------------+---------------+
+
+   The VERSION field indicates how the TRACEPARENT DATA should be
+   interpreted.  This document defines the following versions:
+
+                  +=========+==========================+
+                  | Version | Usage                    |
+                  +=========+==========================+
+                  | 0       | Defined in this document |
+                  +---------+--------------------------+
+                  | 252-255 | Private use              |
+                  +---------+--------------------------+
+
+                                 Table 1
+
+   The RESERVED field is for future expansion and MUST be set to 0.
+
+3.1.  Version 0
+
+   The TRACEPARENT DATA field for version 0 contains 3 fields: a 16 byte
+   trace-id, an 8 byte parent-id, and a 1 byte trace-flags field.  All
+   these fields are MANDATORY.
+
+          0                   1
+          0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+         +---------------+---------------+
+    0:   |           TRACE-ID            /
+         /                               |
+         +---------------+---------------+
+    16:  |           PARENT-ID           /
+         /                               |
+         +---------------+---------------+
+    24:  |  TRACEFLAGS   |
+         +---------------+
+
+4.  Presentation Format
+
+   Even though EDNS options will never appear in DNS zone files, its
+   value could appear in logging or analysis of packet captures.
+
+   The presentation format for TRACEPARENT version 0 follows the
+   traceparent HTTP header from Section 3.2 of [W3C.trace-context]:
+
+   TRACEPARENT=[version]-[trace-id]-[parent-id]-[trace-flags]
+
+   Where each field is represented as Base16 with the hexadecimal
+   characters in lowercase.
+
+   The presentation format for unknown and private versions is
+
+   TRACEPARENT=[version]-[traceparent-data]
+
+   Where each field is represented as Base16 with the hexadecimal
+   characters in lowercase.
+
+5.  Processing of TRACEPARENT
+
+   TRACEPARENT SHOULD only be used after mutual agreement between the
+   sending and receiving nameserver operators.  A nameserver MAY include
+   a TRACEPARENT option in outgoing queries to trigger tracing in
+   receiving servers.  This model follows the recommendations of
+   Section 4 of [W3C.trace-context].
+
+   Performing tracing SHOULD NOT alter DNS query processing in such a
+   way that responses differ between queries sent with and without a
+   TRACEPARENT option.
+
+   Nameservers receiving a malformed TRACEPARENT option SHOULD ignore
+   this option and continue processing the query.  It is RECOMMENDED to
+   inform the operator of the nameserver, for example using logging,
+   about malformed TRACEPARENT options.  An nameserver MAY ignore
+   TRACEPARENT options for any reason, including resource constraints.
+
+   A TRACEPARENT option MUST at most appear once in the OPT pseudo-
+   record, multiple TRACEPARENT options MUST be considered malformed.
+
+   Tracing information is collected outside of the DNS transaction and
+   is independent of the DNS query processing.  The inclusion of a
+   TRACEPARENT option in a query must be seen as a signal from the
+   requester that tracing should be performed.
+
+   The TRACEPARENT option SHOULD NOT appear in responses from nameserver
+   and it's inclusion in a response is not defined in this document.
+
+5.1.  Access Control
+
+   It is RECOMMENDED to use access control on who can send TRACEPARENT
+   to initiate data collection, e.g. using IP address allow-lists,
+   TSIG[RFC8945], or other methods.
+
+   When a nameserver receives the TRACEPARENT EDNS option from a system
+   that is allowed to initiate tracing, it should perform any operations
+   required to collect tracing information, as configured by the
+   operator.
+
+   When a nameserver receives the TRACEPARENT EDNS option from a system
+   that is not allowed to initiate tracing, it MUST ignore the option
+   and process the query as if no TRACEPARENT option were present.
+
+6.  Security Considerations
+
+   Tracing could use significant system resources and hence should be
+   limited.  As described in Section 5 and Section 5.1, tracing should
+   only be done after after mutual agreement and access controls should
+   be used.  Other limitations that could be implemented are load-based,
+   where the nameserver decides whether to enable tracing based on the
+   system load, or based on a probability factor.
+
+7.  IANA Considerations
+
+   IANA is requested to assign a new value in the DNS EDNS0 Option Codes
+   (OPT) [RFC6891] registry as follows:
+
+            +=======+=============+==========+===============+
+            | Value | Name        | Status   | Reference     |
+            +=======+=============+==========+===============+
+            | TBD1  | TRACEPARENT | Optional | This document |
+            +-------+-------------+----------+---------------+
+
+                  Table 2: Requested EDNS0 Option Codes
+
+8.  Normative References
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/rfc/rfc2119>.
+
+   [RFC4648]  Josefsson, S., "The Base16, Base32, and Base64 Data
+              Encodings", RFC 4648, DOI 10.17487/RFC4648, October 2006,
+              <https://www.rfc-editor.org/rfc/rfc4648>.
+
+   [RFC6891]  Damas, J., Graff, M., and P. Vixie, "Extension Mechanisms
+              for DNS (EDNS(0))", STD 75, RFC 6891,
+              DOI 10.17487/RFC6891, April 2013,
+              <https://www.rfc-editor.org/rfc/rfc6891>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
+
+   [RFC8945]  Dupont, F., Morris, S., Vixie, P., Eastlake 3rd, D.,
+              Gudmundsson, O., and B. Wellington, "Secret Key
+              Transaction Authentication for DNS (TSIG)", STD 93,
+              RFC 8945, DOI 10.17487/RFC8945, November 2020,
+              <https://www.rfc-editor.org/rfc/rfc8945>.
+
+   [RFC9499]  Hoffman, P. and K. Fujiwara, "DNS Terminology", BCP 219,
+              RFC 9499, DOI 10.17487/RFC9499, March 2024,
+              <https://www.rfc-editor.org/rfc/rfc9499>.
+
+   [W3C.trace-context]
+              "Trace Context", W3C WD trace-context, W3C trace-context,
+              <https://www.w3.org/TR/trace-context/>.
+
+Appendix A.  Presentation Format Examples
+
+   An OpenTelemetry Trace ID of 1234567890ABCDEF1234567890ABCDEF, Parent
+   ID of FEDCBA0987654321, and no Trace Flags is presented as:
+
+   TRACEPARENT=00-1234567890abcdef1234567890abcdef-fedcba0987654321-00
+
+Acknowledgments
+
+   The authors would like to acknowledge Job Snijders and Wouter de
+   Vries for their initial ideas and expertise of OpenTelemetry.
+
+Authors' Addresses
+
+   Pieter Lexis
+   PowerDNS.com B.V.
+   Email: pieter.lexis@powerdns.com
+
+
+   Otto Moerbeek
+   PowerDNS.com B.V.
+   Email: otto.moerbeek@powerdns.com
+
+
+   Peter van Dijk
+   PowerDNS.com B.V.
+   Email: peter.van.dijk@powerdns.com
+
+
+   Shane Kerr
+   IBM
+   Email: shane@time-travellers.org
+
+
+   Wouter de Vries
+   Cloudflare
+   Email: todo@example.com
