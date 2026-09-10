@@ -24,22 +24,30 @@ venue:
 
 author:
  -
+    fullname: Pieter Lexis
+    organization: PowerDNS.com B.V.
+    email: pieter.lexis@powerdns.com
+ -
     fullname: Otto Moerbeek
     organization: PowerDNS.com B.V.
     email: otto.moerbeek@powerdns.com
  -
+    ins: P. van Dijk
     fullname: Peter van Dijk
     organization: PowerDNS.com B.V.
     email: peter.van.dijk@powerdns.com
  -
-    fullname: Pieter Lexis
-    organization: PowerDNS.com B.V.
-    email: pieter.lexis@powerdns.com
+    fullname: Shane Kerr
+    organization: IBM
+    email: shane@time-travellers.org
+ -
+    ins: W. de Vries
+    fullname: Wouter de Vries
+    organization: Cloudflare
+    email: todo@example.com
+
 
 normative:
-  W3C.trace-context:
-    target: https://www.w3.org/TR/2021/REC-trace-context-1-20211123/
-    display: 'W3C Recommendation: Trace Context'
 
 informative:
 
@@ -136,23 +144,26 @@ TRACEPARENT=[version]-[traceparent-data]
 
 Where each field is represented as Base16 with the hexadecimal characters in lowercase.
 
-# Processing of TRACEPARENT
+# Processing of TRACEPARENT {#processing}
 
-TRACEPARENT SHOULD only be used after mutual agreement between the upstream and downstream server operators.
-A nameserver MAY include a TRACEPARENT option in outgoing queries to trigger tracing in downstream servers.
+TRACEPARENT SHOULD only be used after mutual agreement between the sending and receiving nameserver operators.
+A nameserver MAY include a TRACEPARENT option in outgoing queries to trigger tracing in receiving servers.
 This model follows the recommendations of Section 4 of {{!W3C.trace-context}}.
 
-Performing tracing SHOULD NOT impact DNS query processing.
-Hence, nameservers receiving a malformed TRACEPARENT option SHOULD ignore this option and continue processing the query.
+Performing tracing SHOULD NOT alter DNS query processing in such a way that responses differ between queries sent with and without a TRACEPARENT option.
+
+Nameservers receiving a malformed TRACEPARENT option SHOULD ignore this option and continue processing the query.
 It is RECOMMENDED to inform the operator of the nameserver, for example using logging, about malformed TRACEPARENT options.
 An nameserver MAY ignore TRACEPARENT options for any reason, including resource constraints.
+
+A TRACEPARENT option MUST at most appear once in the OPT pseudo-record, multiple TRACEPARENT options MUST be considered malformed.
 
 Tracing information is collected outside of the DNS transaction and is independent of the DNS query processing.
 The inclusion of a TRACEPARENT option in a query must be seen as a signal from the requester that tracing should be performed.
 
 The TRACEPARENT option SHOULD NOT appear in responses from nameserver and it's inclusion in a response is not defined in this document.
 
-## Access Control
+## Access Control {#acl}
 
 It is RECOMMENDED to use access control on who can send TRACEPARENT to initiate data collection, e.g. using IP address allow-lists, TSIG{{!RFC8945}}, or other methods.
 
@@ -162,14 +173,19 @@ When a nameserver receives the TRACEPARENT EDNS option from a system that is not
 
 # Security Considerations
 
-TODO Security
-
-* ACL
-* Mutual agreement
+Tracing could use significant system resources and hence should be limited.
+As described in {{processing}} and {{acl}}, tracing should only be done after after mutual agreement and access controls should be used.
+Other limitations that could be implemented are load-based, where the nameserver decides whether to enable tracing based on the system load, or based on a probability factor.
 
 # IANA Considerations
 
-None.
+IANA is requested to assign a new value in the DNS EDNS0 Option Codes (OPT) {{!RFC6891}} registry as follows:
+
+
+| Value | Name        | Status   | Reference     |
+|-------|-------------|----------|---------------|
+| TBD1  | TRACEPARENT | Optional | This document |
+{: title="Requested EDNS0 Option Codes" }
 
 --- back
 
