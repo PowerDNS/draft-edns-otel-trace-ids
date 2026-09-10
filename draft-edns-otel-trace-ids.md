@@ -48,9 +48,6 @@ author:
 
 
 normative:
-  W3C.trace-context:
-    target: https://www.w3.org/TR/2021/REC-trace-context-1-20211123/
-    display: 'W3C Recommendation: Trace Context'
 
 informative:
 
