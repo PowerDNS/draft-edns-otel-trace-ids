@@ -146,8 +146,8 @@ Where each field is represented as Base16 with the hexadecimal characters in low
 
 # Processing of TRACEPARENT {#processing}
 
-TRACEPARENT SHOULD only be used after mutual agreement between the upstream and downstream server operators.
-A nameserver MAY include a TRACEPARENT option in outgoing queries to trigger tracing in downstream servers.
+TRACEPARENT SHOULD only be used after mutual agreement between the sending and receiving nameserver operators.
+A nameserver MAY include a TRACEPARENT option in outgoing queries to trigger tracing in receiving servers.
 This model follows the recommendations of Section 4 of {{!W3C.trace-context}}.
 
 Performing tracing SHOULD NOT alter DNS query processing in such a way that responses differ between queries sent with and without a TRACEPARENT option.
