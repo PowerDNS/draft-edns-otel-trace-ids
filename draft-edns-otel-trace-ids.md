@@ -24,17 +24,28 @@ venue:
 
 author:
  -
+    fullname: Pieter Lexis
+    organization: PowerDNS.com B.V.
+    email: pieter.lexis@powerdns.com
+ -
     fullname: Otto Moerbeek
     organization: PowerDNS.com B.V.
     email: otto.moerbeek@powerdns.com
  -
+    ins: P. van Dijk
     fullname: Peter van Dijk
     organization: PowerDNS.com B.V.
     email: peter.van.dijk@powerdns.com
  -
-    fullname: Pieter Lexis
-    organization: PowerDNS.com B.V.
-    email: pieter.lexis@powerdns.com
+    fullname: Shane Kerr
+    organization: IBM
+    email: shane@time-travellers.org
+ -
+    ins: W. de Vries
+    fullname: Wouter de Vries
+    organization: Cloudflare
+    email: todo@example.com
+
 
 normative:
   W3C.trace-context:
