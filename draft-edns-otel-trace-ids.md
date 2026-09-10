@@ -177,7 +177,13 @@ TODO Security
 
 # IANA Considerations
 
-None.
+IANA is requested to assign a new value in the DNS EDNS0 Option Codes (OPT) {{!RFC6891}} registry as follows:
+
+
+| Value | Name        | Status   | Reference     |
+|-------|-------------|----------|---------------|
+| TBD1  | TRACEPARENT | Optional | This document |
+{: title="Requested EDNS0 Option Codes" }
 
 --- back
 
