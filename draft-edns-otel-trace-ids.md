@@ -154,7 +154,7 @@ Performing tracing SHOULD NOT alter DNS query processing in such a way that resp
 
 Nameservers receiving a malformed TRACEPARENT option SHOULD ignore this option and continue processing the query.
 It is RECOMMENDED to inform the operator of the nameserver, for example using logging, about malformed TRACEPARENT options.
-An nameserver MAY ignore TRACEPARENT options for any reason, including resource constraints.
+A nameserver MAY ignore TRACEPARENT options for any reason, including resource constraints.
 
 A TRACEPARENT option MUST at most appear once in the OPT pseudo-record, multiple TRACEPARENT options MUST be considered malformed.
 
