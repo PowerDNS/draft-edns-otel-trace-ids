@@ -108,7 +108,8 @@ The RESERVED field is for future expansion and MUST be set to 0.
 ## Version 0
 
 The TRACEPARENT DATA field for version 0 contains 3 fields: a 16 byte trace-id, an 8 byte parent-id, and a 1 byte trace-flags field.
-All these fields are MANDATORY.
+All three fields MUST be present. Hence, for version 0, OPTION-LENGTH MUST be 27.
+An option with any other length, a non-zero RESERVED field, or an all-zero TRACE-ID or PARENT-ID is malformed.
 
 ~~~ ascii-art
        0                   1
