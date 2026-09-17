@@ -5,12 +5,12 @@
 Network Working Group                                           P. Lexis
 Internet-Draft                                               O. Moerbeek
 Intended status: Informational                               P. van Dijk
-Expires: 14 March 2027                                 PowerDNS.com B.V.
+Expires: 21 March 2027                                 PowerDNS.com B.V.
                                                                  S. Kerr
                                                                      IBM
                                                              W. de Vries
                                                               Cloudflare
-                                                       10 September 2026
+                                                       17 September 2026
 
 
               Communicating Distributed Trace IDs in EDNS
@@ -49,7 +49,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 14 March 2027.
+   This Internet-Draft will expire on 21 March 2027.
 
 Copyright Notice
 
@@ -142,7 +142,9 @@ Table of Contents
 
    The TRACEPARENT DATA field for version 0 contains 3 fields: a 16 byte
    trace-id, an 8 byte parent-id, and a 1 byte trace-flags field.  All
-   these fields are MANDATORY.
+   three fields MUST be present.  Hence, for version 0, OPTION-LENGTH
+   MUST be 27.  An option with any other length, a non-zero RESERVED
+   field, or an all-zero TRACE-ID or PARENT-ID is malformed.
 
           0                   1
           0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
@@ -191,7 +193,7 @@ Table of Contents
    Nameservers receiving a malformed TRACEPARENT option SHOULD ignore
    this option and continue processing the query.  It is RECOMMENDED to
    inform the operator of the nameserver, for example using logging,
-   about malformed TRACEPARENT options.  An nameserver MAY ignore
+   about malformed TRACEPARENT options.  A nameserver MAY ignore
    TRACEPARENT options for any reason, including resource constraints.
 
    A TRACEPARENT option MUST at most appear once in the OPT pseudo-
@@ -307,9 +309,9 @@ Authors' Addresses
 
    Shane Kerr
    IBM
-   Email: shane@time-travellers.org
+   Email: shane.kerr@ibm.com
 
 
    Wouter de Vries
    Cloudflare
-   Email: todo@example.com
+   Email: wouter@cloudflare.com

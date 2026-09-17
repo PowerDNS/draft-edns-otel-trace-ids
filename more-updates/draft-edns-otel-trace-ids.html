@@ -1050,7 +1050,7 @@ svg {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Lexis, et al.</td>
-<td class="center">Expires 14 March 2027</td>
+<td class="center">Expires 21 March 2027</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1063,12 +1063,12 @@ svg {
 <dd class="internet-draft">draft-edns-otel-trace-ids-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2026-09-10" class="published">10 September 2026</time>
+<time datetime="2026-09-17" class="published">17 September 2026</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Informational</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2027-03-14">14 March 2027</time></dd>
+<dd class="expires"><time datetime="2027-03-21">21 March 2027</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1129,7 +1129,7 @@ svg {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 14 March 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 21 March 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1281,7 +1281,8 @@ This document defines the following versions:<a href="#section-3-3" class="pilcr
 <a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-version-0" class="section-name selfRef">Version 0</a>
         </h3>
 <p id="section-3.1-1">The TRACEPARENT DATA field for version 0 contains 3 fields: a 16 byte trace-id, an 8 byte parent-id, and a 1 byte trace-flags field.
-All these fields are MANDATORY.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
+All three fields <span class="bcp14">MUST</span> be present. Hence, for version 0, OPTION-LENGTH <span class="bcp14">MUST</span> be 27.
+An option with any other length, a non-zero RESERVED field, or an all-zero TRACE-ID or PARENT-ID is malformed.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
 <div class="alignLeft art-ascii-art art-text artwork" id="section-3.1-2">
 <pre>
        0                   1
@@ -1334,7 +1335,7 @@ This model follows the recommendations of Section 4 of <span>[<a href="#W3C.trac
 <p id="section-5-2">Performing tracing <span class="bcp14">SHOULD NOT</span> alter DNS query processing in such a way that responses differ between queries sent with and without a TRACEPARENT option.<a href="#section-5-2" class="pilcrow">¶</a></p>
 <p id="section-5-3">Nameservers receiving a malformed TRACEPARENT option <span class="bcp14">SHOULD</span> ignore this option and continue processing the query.
 It is <span class="bcp14">RECOMMENDED</span> to inform the operator of the nameserver, for example using logging, about malformed TRACEPARENT options.
-An nameserver <span class="bcp14">MAY</span> ignore TRACEPARENT options for any reason, including resource constraints.<a href="#section-5-3" class="pilcrow">¶</a></p>
+A nameserver <span class="bcp14">MAY</span> ignore TRACEPARENT options for any reason, including resource constraints.<a href="#section-5-3" class="pilcrow">¶</a></p>
 <p id="section-5-4">A TRACEPARENT option <span class="bcp14">MUST</span> at most appear once in the OPT pseudo-record, multiple TRACEPARENT options <span class="bcp14">MUST</span> be considered malformed.<a href="#section-5-4" class="pilcrow">¶</a></p>
 <p id="section-5-5">Tracing information is collected outside of the DNS transaction and is independent of the DNS query processing.
 The inclusion of a TRACEPARENT option in a query must be seen as a signal from the requester that tracing should be performed.<a href="#section-5-5" class="pilcrow">¶</a></p>
@@ -1483,7 +1484,7 @@ TRACEPARENT=00-1234567890abcdef1234567890abcdef-fedcba0987654321-00
 <div dir="auto" class="left"><span class="org">IBM</span></div>
 <div class="email">
 <span>Email:</span>
-<a href="mailto:shane@time-travellers.org" class="email">shane@time-travellers.org</a>
+<a href="mailto:shane.kerr@ibm.com" class="email">shane.kerr@ibm.com</a>
 </div>
 </address>
 <address class="vcard">
@@ -1491,7 +1492,7 @@ TRACEPARENT=00-1234567890abcdef1234567890abcdef-fedcba0987654321-00
 <div dir="auto" class="left"><span class="org">Cloudflare</span></div>
 <div class="email">
 <span>Email:</span>
-<a href="mailto:todo@example.com" class="email">todo@example.com</a>
+<a href="mailto:wouter@cloudflare.com" class="email">wouter@cloudflare.com</a>
 </div>
 </address>
 </section>
