@@ -39,12 +39,12 @@ author:
  -
     fullname: Shane Kerr
     organization: IBM
-    email: shane@time-travellers.org
+    email: shane.kerr@ibm.com
  -
     ins: W. de Vries
     fullname: Wouter de Vries
     organization: Cloudflare
-    email: todo@example.com
+    email: wouter@cloudflare.com
 
 
 normative:
