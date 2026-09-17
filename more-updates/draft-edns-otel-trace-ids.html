@@ -1334,12 +1334,13 @@ A nameserver <span class="bcp14">MAY</span> include a TRACEPARENT option in outg
 This model follows the recommendations of Section 4 of <span>[<a href="#W3C.trace-context" class="cite xref">W3C.trace-context</a>]</span>.<a href="#section-5-1" class="pilcrow">¶</a></p>
 <p id="section-5-2">Performing tracing <span class="bcp14">SHOULD NOT</span> alter DNS query processing in such a way that responses differ between queries sent with and without a TRACEPARENT option.<a href="#section-5-2" class="pilcrow">¶</a></p>
 <p id="section-5-3">Nameservers receiving a malformed TRACEPARENT option <span class="bcp14">SHOULD</span> ignore this option and continue processing the query.
-It is <span class="bcp14">RECOMMENDED</span> to inform the operator of the nameserver, for example using logging, about malformed TRACEPARENT options.
-A nameserver <span class="bcp14">MAY</span> ignore TRACEPARENT options for any reason, including resource constraints.<a href="#section-5-3" class="pilcrow">¶</a></p>
-<p id="section-5-4">A TRACEPARENT option <span class="bcp14">MUST</span> at most appear once in the OPT pseudo-record, multiple TRACEPARENT options <span class="bcp14">MUST</span> be considered malformed.<a href="#section-5-4" class="pilcrow">¶</a></p>
-<p id="section-5-5">Tracing information is collected outside of the DNS transaction and is independent of the DNS query processing.
-The inclusion of a TRACEPARENT option in a query must be seen as a signal from the requester that tracing should be performed.<a href="#section-5-5" class="pilcrow">¶</a></p>
-<p id="section-5-6">The TRACEPARENT option <span class="bcp14">SHOULD NOT</span> appear in responses from nameserver and it's inclusion in a response is not defined in this document.<a href="#section-5-6" class="pilcrow">¶</a></p>
+This handling of the malformed option is the opposite of the definition in section 7 of <span>[<a href="#RFC6891" class="cite xref">RFC6891</a>]</span>.<a href="#section-5-3" class="pilcrow">¶</a></p>
+<p id="section-5-4">It is <span class="bcp14">RECOMMENDED</span> to inform the operator of the nameserver, for example using logging, about malformed TRACEPARENT options.
+A nameserver <span class="bcp14">MAY</span> ignore TRACEPARENT options for any reason, including resource constraints.<a href="#section-5-4" class="pilcrow">¶</a></p>
+<p id="section-5-5">A TRACEPARENT option <span class="bcp14">MUST</span> at most appear once in the OPT pseudo-record, multiple TRACEPARENT options <span class="bcp14">MUST</span> be considered malformed.<a href="#section-5-5" class="pilcrow">¶</a></p>
+<p id="section-5-6">Tracing information is collected outside of the DNS transaction and is independent of the DNS query processing.
+The inclusion of a TRACEPARENT option in a query must be seen as a signal from the requester that tracing should be performed.<a href="#section-5-6" class="pilcrow">¶</a></p>
+<p id="section-5-7">The TRACEPARENT option <span class="bcp14">SHOULD NOT</span> appear in responses from nameserver and it's inclusion in a response is not defined in this document.<a href="#section-5-7" class="pilcrow">¶</a></p>
 <div id="acl">
 <section id="section-5.1">
         <h3 id="name-access-control">

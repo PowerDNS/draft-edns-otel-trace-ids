@@ -191,10 +191,14 @@ Table of Contents
    TRACEPARENT option.
 
    Nameservers receiving a malformed TRACEPARENT option SHOULD ignore
-   this option and continue processing the query.  It is RECOMMENDED to
-   inform the operator of the nameserver, for example using logging,
-   about malformed TRACEPARENT options.  A nameserver MAY ignore
-   TRACEPARENT options for any reason, including resource constraints.
+   this option and continue processing the query.  This handling of the
+   malformed option is the opposite of the definition in section 7 of
+   [RFC6891].
+
+   It is RECOMMENDED to inform the operator of the nameserver, for
+   example using logging, about malformed TRACEPARENT options.  A
+   nameserver MAY ignore TRACEPARENT options for any reason, including
+   resource constraints.
 
    A TRACEPARENT option MUST at most appear once in the OPT pseudo-
    record, multiple TRACEPARENT options MUST be considered malformed.
